@@ -1,56 +1,54 @@
 <template>
-  <div>
-    <div id="cameraFrame" class="camera-frame">
+  <div class="row">
+    <div id="cameraFrame" class="col-12">
+      <div class="row">
 
-      <div class="cameraFrame-video">
-        <div id="canvas">
+        <div class="col-7">
 
-        </div>
-        <video id="video" autoplay playsinline muted></video>
-        <div id="prediction"></div>
-
-        <div class="frame top-left-frame"/>
-        <div class="frame top-right-frame"/>
-        <div class="frame bottom-left-frame"/>
-        <div class="frame bottom-right-frame"/>
-
-      </div>
-
-      <div class="cameraFrame-images">
-        <div class="cameraFrame-images-item d-flex align-items-center" v-for="item in faceModels"
-             v-if="item.inProgress">
-          <div class="d-flex align-items-center justify-content-between">
-            <div class="images-item-emoji" v-html="item.icon"></div>
-            <div class="images-item-description px-2">
-              <span>{{item.name}}</span>
-              <p class="m-0">Please make your face {{item.name}} </p>
-            </div>
+          <div class="cameraFrame-video">
+            <div id="canvas"></div>
+            <video id="video" autoplay playsinline muted width="720" height="560"></video>
+            <div id="prediction"></div>
           </div>
+        </div>
 
-          <div class="images-progress">
-            <img v-if="item.file" :src="item.file">
-            <span v-else>
+        <div class="col-5">
+          <div class="cameraFrame-images">
+            <div class="cameraFrame-images-item d-flex align-items-center" v-for="item in faceModels"
+                 v-if="item.inProgress">
+              <div class="d-flex align-items-center justify-content-between">
+                <div class="images-item-emoji" v-html="item.icon"></div>
+                <div class="images-item-description px-2">
+                  <span>{{item.name}}</span>
+                  <p class="m-0">Please make your face {{item.name}} </p>
+                </div>
+              </div>
+
+              <div class="images-progress">
+                <img v-if="item.file" :src="item.file">
+                <span v-else>
                             {{detectedFaceCounter.length * 10+' % '}}
                         </span>
-          </div>
+              </div>
 
-        </div>
-
-        <div class="cameraFrame-images-gallery">
-          <div class="gallery-item" v-for="item in faceModels" v-if="item.file">
-            <div class="images-item-emoji" v-html="item.icon">
             </div>
-            <img v-if="item.file" :src="item.file">
-          </div>
+            <div class="cameraFrame-images-gallery">
+              <div class="gallery-item" v-for="item in faceModels" v-if="item.file">
+                <div class="images-item-emoji" v-html="item.icon">
+                </div>
+                <img v-if="item.file" :src="item.file">
+              </div>
 
+
+            </div>
+          </div>
 
         </div>
 
       </div>
 
     </div>
-
-    <div class="detectError" v-if="cantDetectFaceError">
+    <div class="w-100 detectError" v-if="cantDetectFaceError">
       Your face is not recognizable. Please change the angle of your face and stand where your face is visible.
     </div>
   </div>
@@ -210,16 +208,16 @@
 
           const canvas = faceapi.createCanvasFromMedia(video);
           document.getElementById('canvas').append(canvas);
-          const displaySize = {width: video.videoWidth, height: video.videoHeight};
+          const displaySize = {width: video.width, height: video.height};
           faceapi.matchDimensions(canvas, displaySize);
           setInterval(async () => {
             const detection = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceExpressions()
             const resizedDetections = faceapi.resizeResults(detection, displaySize);
             canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
 
-            // faceapi.draw.drawDetections(canvas, resizedDetections);
-            // faceapi.draw.drawFaceExpressions(canvas, resizedDetections);
-            // faceapi.draw.drawFaceLandmarks(canvas, resizedDetections);
+            faceapi.draw.drawDetections(canvas, resizedDetections);
+            faceapi.draw.drawFaceExpressions(canvas, resizedDetections);
+            faceapi.draw.drawFaceLandmarks(canvas, resizedDetections);
 
             // const predictions = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceExpressions();
             //
@@ -290,209 +288,117 @@
   }
 </script>
 
-<style lang="scss" scoped>
-
-  .camera-frame {
-    height: auto;
-    width: 100%;
-    /*height: auto;*/
-    /*width: auto;*/
+<style lang="scss">
+  .cameraFrame-video {
     position: relative;
+    #canvas {
+      position: absolute;
+    }
+  }
+
+  .cameraFrame-images {
+    padding: 10px;
     display: flex;
-    /*flex-flow: column;*/
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
 
-    .cameraFrame-video {
-      position: relative;
-      width: 50%;
+    .cameraFrame-images-item {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      width: 100%;
+      height: 100px;
+      /*background-color: #4caf50;*/
+      .images-item-emoji {
+        width: 70px;
+        height: 70px;
+        border-radius: 50px;
+        border: 2px dashed #3C4858;
+        padding: 5px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
 
-
-      #canvas {
-        position: absolute;
-      }
-
-      video {
-        width: calc(100% - 20px);
-        margin: 10px 10px 5px 10px;
-        background-color: rgba(0, 0, 0, 0.22);
-        border-radius: 5px;
-      }
-
-      .frame {
-        &:before, &:after {
-          content: '';
-          position: absolute;
-          background-color: rgba(196, 196, 196, 0.7);
-          border-radius: 10px;
+        svg {
+          width: 48px;
+          height: 48px;
         }
       }
 
-      .top-left-frame {
-        &:before {
-          left: 0;
-          top: 0;
-          width: 70px;
-          height: 2.5px;
+      .images-item-description {
+        padding-right: 10px;
+
+        span {
+          font-weight: bold;
+          font-size: 15px;
         }
 
-        &:after {
-          left: 0;
-          top: 0;
-          width: 2.5px;
-          height: 70px;
+        p {
+          opacity: 0.6;
         }
       }
 
-      .top-right-frame {
-        &:before {
-          right: 0;
-          top: 0;
-          width: 70px;
-          height: 2.5px;
-        }
+      .images-progress {
+        background-color: rgba(#27ae60, 0.2);
+        height: 35px;
+        width: 70px;
+        border-radius: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
 
-        &:after {
-          right: 0;
-          top: 0;
-          width: 2.5px;
-          height: 70px;
+        img {
+          width: 100%;
+          height: auto;
         }
       }
 
-      .bottom-left-frame {
-        &:before {
-          left: 0;
-          bottom: 0;
-          width: 70px;
-          height: 2.5px;
-        }
-
-        &:after {
-          left: 0;
-          bottom: 0;
-          width: 2.5px;
-          height: 70px;
-        }
-      }
-
-      .bottom-right-frame {
-        &:before {
-          right: 0;
-          bottom: 0;
-          width: 70px;
-          height: 2.5px;
-        }
-
-        &:after {
-          right: 0;
-          bottom: 0;
-          width: 2.5px;
-          height: 70px;
-        }
-      }
     }
 
-    .cameraFrame-images {
-      width: 50%;
-      height: 100%;
-      padding: 10px;
+    .cameraFrame-images-gallery {
+      width: 100%;
+      height: auto;
       display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: space-between;
+      justify-content: space-around;
+      flex-flow: wrap;
+      margin-top: 30px;
 
-      .cameraFrame-images-item {
-        display: flex;
-        align-items: flex-start;
-        justify-content: space-between;
-        width: 100%;
-        height: 100px;
-        /*background-color: #4caf50;*/
+      .gallery-item {
+        position: relative;
+        width: 150px;
+        height: auto;
+        overflow: hidden;
+        margin: 10px;
+
         .images-item-emoji {
-          width: 70px;
-          height: 70px;
-          border-radius: 50px;
-          border: 2px dashed #3C4858;
-          padding: 5px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
+          position: absolute;
+          top: 0;
+          right: 0;
 
           svg {
-            width: 48px;
-            height: 48px;
+            width: 25px;
+            height: 25px;
           }
         }
 
-        .images-item-description {
-          padding-right: 10px;
-
-          span {
-            font-weight: bold;
-            font-size: 15px;
-          }
-
-          p {
-            opacity: 0.6;
-          }
-        }
-
-        .images-progress {
-          background-color: rgba(#27ae60, 0.2);
-          height: 35px;
-          width: 70px;
-          border-radius: 50px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-
-          img {
-            width: 100%;
-            height: auto;
-          }
-        }
-
-      }
-
-      .cameraFrame-images-gallery {
-        width: 100%;
-        height: auto;
-        display: flex;
-        justify-content: space-around;
-        flex-flow: wrap;
-        margin-top: 30px;
-
-        .gallery-item {
-          position: relative;
-          width: 150px;
+        img {
+          border-radius: 10px;
+          width: 100%;
           height: auto;
-          overflow: hidden;
-          margin: 10px;
-
-          .images-item-emoji {
-            position: absolute;
-            top: 0;
-            right: 0;
-
-            svg {
-              width: 25px;
-              height: 25px;
-            }
-          }
-
-          img {
-            border-radius: 10px;
-            width: 100%;
-            height: auto;
-          }
         }
-
       }
+
     }
-
-
   }
+
+
   .detectError {
+    position: absolute;
+    bottom: 0;
+    left: 0;
     padding: 5px 10px;
+    color: rgb(233, 30, 99);
     background-color: rgba(233, 30, 99, 0.52);
   }
 </style>
