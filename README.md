@@ -2,6 +2,9 @@
 
 ## Vuejs & Nuxtjs & Face-api.js
 
+Example
+![](https://github.com/hasanzarghami/Vuejs-FaceDetection/blob/main/Untitled.png)
+
 
 JavaScript API for face detection and face recognition in the browser implemented on top of the tensorflow.js core API
 https://justadudewhohacks.github.io/face-api.js/docs/index.html
